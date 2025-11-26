@@ -17,7 +17,6 @@ const interviewSchema = new mongoose.Schema(
       type: String,
       required: [true, "Phone number is required"],
       trim: true,
-      // match: [/^[0-9]{10}$/, "Phone number must be 10 digits"],
     },
     position: {
       type: String,
@@ -36,25 +35,12 @@ const interviewSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-
     status: {
       type: String,
-      // enum: [
-      //   "Not Joined",
-      //   "Lack of Knowledge",
-      //   "Need to do 2nd Round",
-      //   "Offer Sent",
-      //   "Offer Accepted",
-      //   "Offer Declined",
-      // ],
-      // default: "Not Joined",
     },
-
     round: {
       type: String,
-      // default: "Pending",
     },
-
     currentCTC: {
       type: Number,
       default: null,
@@ -79,6 +65,15 @@ const interviewSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    
+    emailSent: {
+      type: Boolean,
+      default: false
+    },
+    lastEmailRound: {
+      type: String,
+      default: ""
+    }
   },
   {
     timestamps: true,
