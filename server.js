@@ -13,37 +13,52 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 connectDB(process.env.MONGO_URI);
 
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Credentials", "true");
+//   next();
+// });
+
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       callback(null, origin); // reflect requested origin
+//     },
+//     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//     allowedHeaders: "Content-Type,Authorization",
+//     credentials: true,
+//   })
+// );
 
 app.get("/api/health", (req, res) => {
-  res.status(200).json({ 
-    success: true, 
+  res.status(200).json({
+    success: true,
     message: "Server is running successfully",
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
-
 app.use("/api/candidates", candidateRoutes);
 app.use("/api/interviews", interviewRoutes);
-app.use("/api/dashboard", dashboardRoutes); 
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/email", emailRoutes);
 
 // 404 handler for undefined routes
 app.use("*", (req, res) => {
   res.status(404).json({
     success: false,
-    message: `Route not found: ${req.originalUrl}`
+    message: `Route not found: ${req.originalUrl}`,
   });
 });
-
 
 app.use(errorHandler);
 
