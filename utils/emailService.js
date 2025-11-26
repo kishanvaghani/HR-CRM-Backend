@@ -1,16 +1,14 @@
 
 import nodemailer from 'nodemailer';
-
-// Create transporter with better configuration
 const createTransporter = () => {
   return nodemailer.createTransport({
     service: 'gmail',
     host: 'smtp.gmail.com',
     port: 587,
-    secure: false, 
+    secure: false,
     auth: {
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS, 
+      pass: process.env.EMAIL_PASS,
     },
     tls: {
       rejectUnauthorized: false
@@ -161,7 +159,7 @@ export const sendInterviewEmail = async (email, candidate, position, date, time,
       meetingLink,
       round
     });
-console.log(meetingLink, "njjjjjjjjjjjjjjj");
+    console.log(meetingLink, "njjjjjjjjjjjjjjj");
 
     // Test transporter first
     const isTransporterReady = await testTransporter();
@@ -175,9 +173,9 @@ console.log(meetingLink, "njjjjjjjjjjjjjjj");
     }
 
     const transporter = createTransporter();
-    
+
     const finalMeetingLink = meetingLink || DEFAULT_MEETING_LINK;
-    
+
     const mailOptions = {
       from: {
         name: 'HR Team',
@@ -210,13 +208,13 @@ HR Team
     });
 
     const result = await transporter.sendMail(mailOptions);
-    
+
     console.log('✅ Email sent successfully!');
     console.log('Message ID:', result.messageId);
     console.log('Response:', result.response);
-    
+
     return result;
-    
+
   } catch (error) {
     console.error('❌ Email sending failed:', error);
     console.error('Error details:', {

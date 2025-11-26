@@ -2,16 +2,15 @@ import Interview from "../models/Interview.js";
 import Candidate from "../models/Candidate.js";
 import Dashboard from "../models/Dashboard.js";
 
-// Get Dashboard Overview
 export const getDashboardOverview = async (req, res) => {
   try {
-    // Get counts from database
+
     const totalCandidates = await Candidate.countDocuments();
     const scheduledInterviews = await Interview.countDocuments({ status: "Scheduled" });
     const completedInterviews = await Interview.countDocuments({ status: "Completed" });
     const pendingReviews = await Interview.countDocuments({ status: "Pending" });
 
-    // Get recent 6 months data for charts
+
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
@@ -93,17 +92,17 @@ export const getDashboardOverview = async (req, res) => {
     // Get upcoming interviews (next 7 days)
     const nextWeek = new Date();
     nextWeek.setDate(nextWeek.getDate() + 7);
-    
+
     const upcomingInterviews = await Interview.find({
-      date: { 
+      date: {
         $gte: new Date().toISOString().split('T')[0],
         $lte: nextWeek.toISOString().split('T')[0]
       },
       status: { $in: ["Pending", "Scheduled"] }
     })
-    .populate('candidate', 'name position')
-    .sort({ date: 1, time: 1 })
-    .limit(5);
+      .populate('candidate', 'name position')
+      .sort({ date: 1, time: 1 })
+      .limit(5);
 
     // Format upcoming interviews
     const formattedUpcomingInterviews = upcomingInterviews.map(interview => ({

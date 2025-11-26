@@ -1,22 +1,3 @@
-// import mongoose from "mongoose";
-
-// const candidateSchema = new mongoose.Schema(
-//   {
-//     name: { type: String, required: true, trim: true },
-//     email: { type: String, trim: true },
-//     phone: { type: String, trim: true },
-//     status: {
-//       type: String,
-//       enum: ["Pending", "Scheduled", "Completed", "Applied"],
-//       default: "Pending",
-//     },
-//     position: { type: String, trim: true },
-//     notes: { type: String },
-//   },
-//   { timestamps: true }
-// );
-
-// export default mongoose.model("Candidate", candidateSchema);
 
 import mongoose from "mongoose";
 
