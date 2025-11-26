@@ -1,6 +1,4 @@
 import mongoose from "mongoose";
-
-// This model aggregates data for dashboard
 const dashboardSchema = new mongoose.Schema({
   totalCandidates: {
     type: Number,
