@@ -1,4 +1,3 @@
-
 import express from "express";
 import {
   getInterviews,
@@ -7,7 +6,7 @@ import {
   getInterviewById,
   deleteInterview,
   getInterviewsByFilter,
-  sendManualEmail
+  // sendManualEmail
 } from "../controllers/interviewController.js";
 
 const router = express.Router();
@@ -18,6 +17,6 @@ router.put("/:id", updateInterview);
 router.get("/filter", getInterviewsByFilter);
 router.get("/:id", getInterviewById);
 router.delete("/:id", deleteInterview);
-router.post("/send-email", sendManualEmail); 
+// router.post("/send-email", sendManualEmail);
 
 export default router;

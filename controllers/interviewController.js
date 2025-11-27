@@ -1,4 +1,3 @@
-
 import Interview from "../models/Interview.js";
 import { sendInterviewEmail, testTransporter } from "../utils/emailService.js";
 
@@ -35,9 +34,9 @@ export const createInterview = async (req, res) => {
     console.log("✅ Interview saved:", newInterview._id);
 
     // Auto-send email for 1st and 2nd rounds
-    if (['1st Round', '2nd Round'].includes(req.body.round)) {
+    if (["1st Round", "2nd Round"].includes(req.body.round)) {
       console.log(`🔄 Attempting to send ${req.body.round} email...`);
-      
+
       try {
         await sendInterviewEmail(
           newInterview.email,
@@ -48,16 +47,18 @@ export const createInterview = async (req, res) => {
           newInterview.meetingLink,
           req.body.round
         );
-        
+
         // Update interview with email sent status
         newInterview.emailSent = true;
         newInterview.lastEmailRound = req.body.round;
         await newInterview.save();
-        
+
         console.log(`✅ Auto-email sent successfully for ${req.body.round}`);
-        
       } catch (emailError) {
-        console.error(`❌ Failed to send auto-email for ${req.body.round}:`, emailError);
+        console.error(
+          `❌ Failed to send auto-email for ${req.body.round}:`,
+          emailError
+        );
         // Continue with the response even if email fails
         console.log("⚠️ Continuing without email...");
       }
@@ -69,9 +70,8 @@ export const createInterview = async (req, res) => {
       success: true,
       message: "Interview Added Successfully",
       data: newInterview,
-      emailSent: newInterview.emailSent || false
+      emailSent: newInterview.emailSent || false,
     });
-
   } catch (error) {
     console.error("❌ Error creating interview:", error);
     res.status(400).json({
@@ -133,9 +133,9 @@ export const updateInterview = async (req, res) => {
 
     // Auto-send email when round changes to 1st or 2nd round
     const roundChanged = oldInterview.round !== req.body.round;
-    if (roundChanged && ['1st Round', '2nd Round'].includes(req.body.round)) {
+    if (roundChanged && ["1st Round", "2nd Round"].includes(req.body.round)) {
       console.log(`🔄 Round changed to ${req.body.round}, sending email...`);
-      
+
       try {
         await sendInterviewEmail(
           updatedInterview.email,
@@ -146,14 +146,13 @@ export const updateInterview = async (req, res) => {
           updatedInterview.meetingLink,
           req.body.round
         );
-        
+
         // Update interview with email sent status
         updatedInterview.emailSent = true;
         updatedInterview.lastEmailRound = req.body.round;
         await updatedInterview.save();
-        
+
         console.log(`✅ Update email sent successfully for ${req.body.round}`);
-        
       } catch (emailError) {
         console.error(`❌ Failed to send update email:`, emailError);
         // Continue even if email fails
@@ -165,7 +164,6 @@ export const updateInterview = async (req, res) => {
       message: "Interview updated successfully",
       data: updatedInterview,
     });
-
   } catch (error) {
     console.error("❌ Error updating interview:", error);
     res.status(400).json({
@@ -176,3 +174,92 @@ export const updateInterview = async (req, res) => {
   }
 };
 
+export const getInterviews = async (req, res) => {
+  try {
+    console.log("Fetching all interviews...");
+    const interviews = await Interview.find().sort({ createdAt: -1 });
+
+    console.log(`Found ${interviews.length} interviews`);
+
+    res.status(200).json({
+      success: true,
+      data: interviews,
+    });
+  } catch (error) {
+    console.error("Error fetching interviews:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching interviews",
+      error: error.message,
+    });
+  }
+};
+
+export const getInterviewById = async (req, res) => {
+  try {
+    const interview = await Interview.findById(req.params.id);
+    if (!interview) {
+      return res.status(404).json({
+        success: false,
+        message: "Interview not found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: interview,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching interview",
+      error: error.message,
+    });
+  }
+};
+
+export const deleteInterview = async (req, res) => {
+  try {
+    const deleted = await Interview.findByIdAndDelete(req.params.id);
+
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: "Interview not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Interview deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error deleting interview",
+      error: error.message,
+    });
+  }
+};
+
+export const getInterviewsByFilter = async (req, res) => {
+  try {
+    const { status, round } = req.query;
+    const filter = {};
+
+    if (status) filter.status = status;
+    if (round) filter.round = round;
+
+    const interviews = await Interview.find(filter).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: interviews,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching interviews",
+      error: error.message,
+    });
+  }
+};
