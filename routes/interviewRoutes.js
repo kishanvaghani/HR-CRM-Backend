@@ -7,6 +7,7 @@ import {
   deleteInterview,
   getInterviewsByFilter,
   checkEmailExists,
+  checkPhoneExists,
   getUpcomingInterviews
 
   // sendManualEmail
@@ -22,7 +23,7 @@ router.get("/filter", getInterviewsByFilter);
 router.get("/upcoming", getUpcomingInterviews);
 router.get("/:id", getInterviewById);
 router.delete("/:id", deleteInterview);
-router.get("/check-email", checkEmailExists);
-
+router.post("/check-email", checkEmailExists);
+router.post("/check-phone", checkPhoneExists);
 
 export default router;
