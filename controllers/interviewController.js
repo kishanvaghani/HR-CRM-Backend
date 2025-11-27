@@ -318,6 +318,8 @@ export const getInterviewsByFilter = async (req, res) => {
   }
 };
 
+
+
 export const checkEmailExists = async (req, res) => {
   try {
     const { email } = req.body;
@@ -325,12 +327,44 @@ export const checkEmailExists = async (req, res) => {
     const existing = await Interview.findOne({ email });
 
     if (existing) {
-      return res.json({ exists: true });
+      return res.json({ exists: true, data: existing });
     }
 
     return res.json({ exists: false });
   } catch (error) {
     return res.status(500).json({ exists: false });
+  }
+};
+
+export const checkPhoneExists = async (req, res) => {
+  try {
+    const { phone } = req.body;
+
+    if (!phone) {
+      return res.json({ exists: false });
+    }
+
+    // Check if phone exists in database
+    const existing = await Interview.findOne({ phone: phone.trim() });
+
+    if (existing) {
+      return res.json({ 
+        exists: true,
+        message: "This phone number is already in use",
+        data:existing
+      });
+    }
+
+    return res.json({ 
+      exists: false,
+      message: "Phone number is available"
+    });
+  } catch (error) {
+    console.error("Error checking phone:", error);
+    return res.status(500).json({ 
+      exists: false,
+      message: "Error checking phone number"
+    });
   }
 };
 
