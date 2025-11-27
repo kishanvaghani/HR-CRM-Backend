@@ -12,11 +12,13 @@ const interviewSchema = new mongoose.Schema(
       required: [true, "Email is required"],
       trim: true,
       lowercase: true,
+      unique: true,           
     },
     phone: {
       type: String,
       required: [true, "Phone number is required"],
       trim: true,
+      unique: true,           
     },
     position: {
       type: String,

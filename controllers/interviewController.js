@@ -1,5 +1,6 @@
 import Interview from "../models/Interview.js";
 import { sendInterviewEmail, testTransporter } from "../utils/emailService.js";
+import Interview from "../models/interviewModel.js";
 
 export const createInterview = async (req, res) => {
   try {
@@ -81,6 +82,9 @@ export const createInterview = async (req, res) => {
     });
   }
 };
+// check phone number
+
+
 
 export const updateInterview = async (req, res) => {
   try {
@@ -241,6 +245,56 @@ export const deleteInterview = async (req, res) => {
   }
 };
 
+
+// Add this function to your interviewController.js
+// Add this function to your controller
+// controllers/interviewController.js - Update getUpcomingInterviews function
+export const getUpcomingInterviews = async (req, res) => {
+  try {
+    const { filter } = req.query;
+    
+    console.log(" GET /upcoming called with filter:", filter);
+    
+    // Simple query to get all interviews first (for testing)
+    let query = {};
+    
+    // Try simple filter first
+    if (filter === "1st-round") {
+      query.round = "1st Round";
+    } else if (filter === "2nd-round") {
+      query.round = "2nd Round";
+    }
+    // For "all" and "other", we'll get everything for now
+    
+    console.log(" Database query:", query);
+
+    // Simple find with error handling
+    const interviews = await Interview.find(query)
+      .sort({ createdAt: -1 })
+      .limit(50) // Limit results for testing
+      .lean();
+
+    console.log(` Found ${interviews.length} interviews`);
+
+    res.status(200).json({
+      success: true,
+      data: interviews,
+      count: interviews.length,
+      message: "Successfully fetched interviews"
+    });
+
+  } catch (error) {
+    console.error(" SERVER ERROR in getUpcomingInterviews:", error);
+    console.error("Error stack:", error.stack);
+    
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+};
 export const getInterviewsByFilter = async (req, res) => {
   try {
     const { status, round } = req.query;
@@ -263,3 +317,22 @@ export const getInterviewsByFilter = async (req, res) => {
     });
   }
 };
+
+
+export const checkEmailExists = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const existing = await Interview.findOne({ email });
+
+    if (existing) {
+      return res.json({ exists: true });
+    }
+
+    return res.json({ exists: false });
+  } catch (error) {
+    return res.status(500).json({ exists: false });
+  }
+};
+
+// export constPhoneExist 
