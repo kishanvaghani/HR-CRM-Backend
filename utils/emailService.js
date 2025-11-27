@@ -82,7 +82,7 @@ const emailTemplates = {
         <p>We look forward to speaking with you!</p>
         
         <div class="footer">
-            <p>Best regards,<br>HR Team</p>
+            <p>Best regards,<br>Octopus Team</p>
         </div>
     </div>
 </body>
@@ -103,7 +103,7 @@ const emailTemplates = {
         .header { background: #059669; color: white; padding: 20px; text-align: center; }
         .content { background: #f9fafb; padding: 20px; margin: 20px 0; }
         .footer { text-align: center; color: #6b7280; font-size: 14px; }
-        .button { background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; }
+        .button { background: #059669; color: white; padding: 12px 24px; text-white text-decoration: none; border-radius: 5px; display: inline-block; }
     </style>
 </head>
 <body>

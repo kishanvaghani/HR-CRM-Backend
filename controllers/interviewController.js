@@ -1,6 +1,6 @@
 import Interview from "../models/Interview.js";
 import { sendInterviewEmail, testTransporter } from "../utils/emailService.js";
-import Interview from "../models/interviewModel.js";
+
 
 export const createInterview = async (req, res) => {
   try {
@@ -318,7 +318,6 @@ export const getInterviewsByFilter = async (req, res) => {
   }
 };
 
-
 export const checkEmailExists = async (req, res) => {
   try {
     const { email } = req.body;
@@ -335,4 +334,3 @@ export const checkEmailExists = async (req, res) => {
   }
 };
 
-// export constPhoneExist 

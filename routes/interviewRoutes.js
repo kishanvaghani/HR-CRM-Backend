@@ -14,7 +14,7 @@ import {
 
 const router = express.Router();
 
-router.get("/check-phone", duplicateEmailCheck);
+
 router.get("/", getInterviews);
 router.post("/", createInterview);
 router.put("/:id", updateInterview);
@@ -23,6 +23,6 @@ router.get("/upcoming", getUpcomingInterviews);
 router.get("/:id", getInterviewById);
 router.delete("/:id", deleteInterview);
 router.get("/check-email", checkEmailExists);
-// router.post("/send-email", sendManualEmail);
+
 
 export default router;
