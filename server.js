@@ -45,7 +45,7 @@ app.get("/api/health", (req, res) => {
   console.log(process.env.CLIENT_URL, "------------------------2");
   res.status(200).json({
     success: true,
-    message: "Server is running successfully",
+    message: "Server is running successfully" + process.env.CLIENT_URL,
     timestamp: new Date().toISOString(),
   });
 });
