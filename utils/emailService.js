@@ -64,7 +64,7 @@ const emailTemplates = {
             <p><strong>Date:</strong> ${date || "To be confirmed"}</p>
             <p><strong>Time:</strong> ${time || "To be confirmed"}</p>
             <p><strong>Meeting Link:</strong> 
-                <a href="${finalMeetingLink}" class="button">Join Meeting</a>
+                <a href="${finalMeetingLink}" class="button" style="color: #fff !important">Join Meeting</a>
             </p>
             <p style="word-break: break-all;"><small>Or copy this link: ${finalMeetingLink}</small></p>
         </div>
@@ -94,33 +94,35 @@ const emailTemplates = {
       return `
 <!DOCTYPE html>
 <html>
+
 <head>
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #059669; color: white; padding: 20px; text-align: center; }
+        .header { background: #2563eb; color: white; padding: 20px; text-align: center; }
         .content { background: #f9fafb; padding: 20px; margin: 20px 0; }
         .footer { text-align: center; color: #6b7280; font-size: 14px; }
-        .button { background: #059669; color: white; padding: 12px 24px; text-white text-decoration: none; border-radius: 5px; display: inline-block; }
+        .button { background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>Second Round Interview</h1>
         </div>
-        
+
         <p>Dear <strong>${candidate}</strong>,</p>
-        
+
         <p>Congratulations! You have been shortlisted for the <strong>Second Round</strong> of interview for the position of <strong>${position}</strong>.</p>
-        
+
         <div class="content">
             <h3>Interview Details:</h3>
             <p><strong>Position:</strong> ${position}</p>
             <p><strong>Date:</strong> ${date || "To be confirmed"}</p>
             <p><strong>Time:</strong> ${time || "To be confirmed"}</p>
-            <p><strong>Meeting Link:</strong> 
-                <a href="${finalMeetingLink}" class="button">Join Meeting</a>
+            <p><strong>Meeting Link:</strong>
+                <a href="${finalMeetingLink}" class="button" style="color: #fff !important">Join Meeting</a>
             </p>
             <p style="word-break: break-all;"><small>Or copy this link: ${finalMeetingLink}</small></p>
         </div>
@@ -134,12 +136,13 @@ const emailTemplates = {
         </ul>
 
         <p>We look forward to our next conversation!</p>
-        
+
         <div class="footer">
             <p>Best regards,<br>HR Team</p>
         </div>
     </div>
 </body>
+
 </html>`;
     },
   },
@@ -212,13 +215,13 @@ const rescheduleEmailTemplates = {
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
+        <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #059669; color: white; padding: 20px; text-align: center; }
+        .header { background: #2563eb; color: white; padding: 20px; text-align: center; }
         .content { background: #f9fafb; padding: 20px; margin: 20px 0; }
         .footer { text-align: center; color: #6b7280; font-size: 14px; }
-        .button { background: #059669; color: white; padding: 12px 24px; text-white text-decoration: none; border-radius: 5px; display: inline-block; }
+        .button { background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; }
     </style>
 </head>
 <body>
@@ -237,7 +240,7 @@ const rescheduleEmailTemplates = {
             <p><strong>Date:</strong> ${date || "To be confirmed"}</p>
             <p><strong>Time:</strong> ${time || "To be confirmed"}</p>
             <p><strong>Meeting Link:</strong> 
-                <a href="${finalMeetingLink}" class="button">Join Meeting</a>
+                <a href="${finalMeetingLink}" class="button" style="color: #fff !important">Join Meeting</a>
             </p>
             <p style="word-break: break-all;"><small>Or copy this link: ${finalMeetingLink}</small></p>
         </div>
