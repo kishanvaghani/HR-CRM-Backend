@@ -1,6 +1,9 @@
 import Interview from "../models/Interview.js";
-import { sendInterviewEmail, testTransporter } from "../utils/emailService.js";
-
+import {
+  rescheduleInterviewEmail,
+  sendInterviewEmail,
+  testTransporter,
+} from "../utils/emailService.js";
 
 export const createInterview = async (req, res) => {
   try {
@@ -84,8 +87,6 @@ export const createInterview = async (req, res) => {
 };
 // check phone number
 
-
-
 export const updateInterview = async (req, res) => {
   try {
     const { id } = req.params;
@@ -137,11 +138,36 @@ export const updateInterview = async (req, res) => {
 
     // Auto-send email when round changes to 1st or 2nd round
     const roundChanged = oldInterview.round !== req.body.round;
+    const dateChanged =
+      oldInterview.date !== req.body.date ||
+      oldInterview.time !== req.body.time;
+
     if (roundChanged && ["1st Round", "2nd Round"].includes(req.body.round)) {
       console.log(`🔄 Round changed to ${req.body.round}, sending email...`);
 
       try {
         await sendInterviewEmail(
+          updatedInterview.email,
+          updatedInterview.candidate,
+          updatedInterview.position,
+          updatedInterview.date,
+          updatedInterview.time,
+          updatedInterview.meetingLink,
+          req.body.round
+        );
+        // Update interview with email sent status
+        updatedInterview.emailSent = true;
+        updatedInterview.lastEmailRound = req.body.round;
+        await updatedInterview.save();
+
+        console.log(`✅ Update email sent successfully for ${req.body.round}`);
+      } catch (emailError) {
+        console.error(`❌ Failed to send update email:`, emailError);
+        // Continue even if email fails
+      }
+    } else if (dateChanged) {
+      try {
+        await rescheduleInterviewEmail(
           updatedInterview.email,
           updatedInterview.candidate,
           updatedInterview.position,
@@ -245,19 +271,18 @@ export const deleteInterview = async (req, res) => {
   }
 };
 
-
 // Add this function to your interviewController.js
 // Add this function to your controller
 // controllers/interviewController.js - Update getUpcomingInterviews function
 export const getUpcomingInterviews = async (req, res) => {
   try {
     const { filter } = req.query;
-    
+
     console.log(" GET /upcoming called with filter:", filter);
-    
+
     // Simple query to get all interviews first (for testing)
     let query = {};
-    
+
     // Try simple filter first
     if (filter === "1st-round") {
       query.round = "1st Round";
@@ -265,7 +290,7 @@ export const getUpcomingInterviews = async (req, res) => {
       query.round = "2nd Round";
     }
     // For "all" and "other", we'll get everything for now
-    
+
     console.log(" Database query:", query);
 
     // Simple find with error handling
@@ -280,18 +305,17 @@ export const getUpcomingInterviews = async (req, res) => {
       success: true,
       data: interviews,
       count: interviews.length,
-      message: "Successfully fetched interviews"
+      message: "Successfully fetched interviews",
     });
-
   } catch (error) {
     console.error(" SERVER ERROR in getUpcomingInterviews:", error);
     console.error("Error stack:", error.stack);
-    
+
     res.status(500).json({
       success: false,
       message: "Internal server error",
       error: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
     });
   }
 };
@@ -317,8 +341,6 @@ export const getInterviewsByFilter = async (req, res) => {
     });
   }
 };
-
-
 
 export const checkEmailExists = async (req, res) => {
   try {
@@ -348,23 +370,22 @@ export const checkPhoneExists = async (req, res) => {
     const existing = await Interview.findOne({ phone: phone.trim() });
 
     if (existing) {
-      return res.json({ 
+      return res.json({
         exists: true,
         message: "This phone number is already in use",
-        data:existing
+        data: existing,
       });
     }
 
-    return res.json({ 
+    return res.json({
       exists: false,
-      message: "Phone number is available"
+      message: "Phone number is available",
     });
   } catch (error) {
     console.error("Error checking phone:", error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       exists: false,
-      message: "Error checking phone number"
+      message: "Error checking phone number",
     });
   }
 };
-
