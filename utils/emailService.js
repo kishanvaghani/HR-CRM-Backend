@@ -1,4 +1,19 @@
 import nodemailer from "nodemailer";
+
+const convertTo12Hour = async (time24) => {
+  const [hours, minutes] = time24.split(':').map(Number);
+  const date = new Date();
+  date.setHours(hours);
+  date.setMinutes(minutes);
+
+  return date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+}
+
+
 const createTransporter = () => {
   return nodemailer.createTransport({
     service: "gmail",
@@ -299,6 +314,7 @@ export const sendInterviewEmail = async (
     const transporter = createTransporter();
 
     const finalMeetingLink = meetingLink || DEFAULT_MEETING_LINK;
+    const localTime = await convertTo12Hour(time);
 
     const mailOptions = {
       from: {
@@ -307,22 +323,7 @@ export const sendInterviewEmail = async (
       },
       to: email,
       subject: template.subject(position),
-      html: template.html(candidate, position, date, time, finalMeetingLink),
-      // Add text version for email clients that don't support HTML
-      //       text: `
-      // Interview Invitation
-
-      // Dear ${candidate},
-
-      // Your ${round} interview has been scheduled for the position of ${position}.
-
-      // Date: ${date || "To be confirmed"}
-      // Time: ${time || "To be confirmed"}
-      // Meeting Link: ${finalMeetingLink}
-
-      // Best regards,
-      // HR Team
-      //       `,
+      html: template.html(candidate, position, date, localTime, finalMeetingLink)
     };
 
     console.log("Sending email with options:", {
@@ -385,6 +386,8 @@ export const rescheduleInterviewEmail = async (
 
     const finalMeetingLink = meetingLink || DEFAULT_MEETING_LINK;
 
+    const localTime = await convertTo12Hour(time);
+
     const mailOptions = {
       from: {
         name: "HR Octopus",
@@ -392,7 +395,7 @@ export const rescheduleInterviewEmail = async (
       },
       to: email,
       subject: template.subject(position),
-      html: template.html(candidate, position, date, time, finalMeetingLink),
+      html: template.html(candidate, position, date, localTime, finalMeetingLink),
       // Add text version for email clients that don't support HTML
       // text: `
       // Interview Invitation From Octopus Tech
