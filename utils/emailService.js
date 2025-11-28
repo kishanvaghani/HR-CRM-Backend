@@ -302,7 +302,7 @@ export const sendInterviewEmail = async (
 
     const mailOptions = {
       from: {
-        name: "HR Team",
+        name: "HR Octopus",
         address: process.env.EMAIL_USER,
       },
       to: email,
@@ -387,7 +387,7 @@ export const rescheduleInterviewEmail = async (
 
     const mailOptions = {
       from: {
-        name: "Octopus Team",
+        name: "HR Octopus",
         address: process.env.EMAIL_USER,
       },
       to: email,
