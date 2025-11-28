@@ -13,6 +13,8 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+console.log(process.env.CLIENT_URL, "------------------------1");
+
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
@@ -40,9 +42,10 @@ connectDB(process.env.MONGO_URI);
 app.use(express.json());
 
 app.get("/api/health", (req, res) => {
+  console.log(process.env.CLIENT_URL, "------------------------2");
   res.status(200).json({
     success: true,
-    message: "Server is running successfully",
+    message: "Server is running successfully" + process.env.CLIENT_URL,
     timestamp: new Date().toISOString(),
   });
 });
