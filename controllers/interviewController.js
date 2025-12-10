@@ -2,7 +2,6 @@ import Interview from "../models/Interview.js";
 import {
   rescheduleInterviewEmail,
   sendInterviewEmail,
-  testTransporter,
 } from "../utils/emailService.js";
 
 export const createInterview = async (req, res) => {
@@ -11,9 +10,6 @@ export const createInterview = async (req, res) => {
     console.log("Request body:", JSON.stringify(req.body, null, 2));
 
     // First, test if email service is working
-    console.log("Testing email transporter...");
-    const emailServiceReady = await testTransporter();
-    console.log("Email service ready:", emailServiceReady);
 
     const interviewData = {
       candidate: req.body.candidate,
@@ -42,7 +38,7 @@ export const createInterview = async (req, res) => {
       console.log(`🔄 Attempting to send ${req.body.round} email...`);
 
       try {
-        await sendInterviewEmail(
+        const result = await sendInterviewEmail(
           newInterview.email,
           newInterview.candidate,
           newInterview.position,
@@ -53,11 +49,25 @@ export const createInterview = async (req, res) => {
         );
 
         // Update interview with email sent status
-        newInterview.emailSent = true;
-        newInterview.lastEmailRound = req.body.round;
-        await newInterview.save();
-
-        console.log(`✅ Auto-email sent successfully for ${req.body.round}`);
+        console.log("====================================");
+        console.log(result, "result===============");
+        console.log("====================================");
+        if (result === "success") {
+          newInterview.emailSent = true;
+          newInterview.lastEmailRound = req.body.round;
+          await newInterview.save();
+          console.log(`✅ Auto-email sent successfully for ${req.body.round}`);
+        } else {
+          newInterview.emailSent = false;
+          newInterview.lastEmailRound = req.body.round;
+          await newInterview.save();
+          console.log(
+            "⚠️ Continuing without email..., Data stored Successfully"
+          );
+        }
+        // newInterview.emailSent = true;
+        // newInterview.lastEmailRound = req.body.round;
+        // await newInterview.save();
       } catch (emailError) {
         console.error(
           `❌ Failed to send auto-email for ${req.body.round}:`,

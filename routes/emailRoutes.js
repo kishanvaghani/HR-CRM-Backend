@@ -1,8 +1,8 @@
-import express from "express";
-import { sendInterviewMail } from "../controllers/emailController.js";
+// import express from "express";
+// import { sendInterviewMail } from "../controllers/emailController.js";
 
-const router = express.Router();
+// const router = express.Router();
 
-router.post("/send", sendInterviewMail);
+// router.post("/send", sendInterviewMail);
 
-export default router;
+// export default router;

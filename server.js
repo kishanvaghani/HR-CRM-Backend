@@ -6,7 +6,7 @@ import { connectDB } from "./config/db.js";
 import candidateRoutes from "./routes/candidateRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
-import emailRoutes from "./routes/emailRoutes.js";
+// import emailRoutes from "./routes/emailRoutes.js";
 import errorHandler from "./middleware/errorMiddleware.js";
 
 dotenv.config();
@@ -53,7 +53,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/candidates", candidateRoutes);
 app.use("/api/interviews", interviewRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/email", emailRoutes);
+// app.use("/api/email", emailRoutes);
 
 // 404 handler for undefined routes
 app.use("*", (req, res) => {

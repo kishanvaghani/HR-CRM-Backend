@@ -1,45 +1,16 @@
-import nodemailer from "nodemailer";
+import { sendEmail } from "./sendEmail.js";
 
 const convertTo12Hour = async (time24) => {
-  const [hours, minutes] = time24.split(':').map(Number);
+  const [hours, minutes] = time24.split(":").map(Number);
   const date = new Date();
   date.setHours(hours);
   date.setMinutes(minutes);
 
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
     hour12: true,
   });
-}
-
-
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    service: "gmail",
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  });
-};
-
-const testTransporter = async () => {
-  try {
-    const transporter = createTransporter();
-    await transporter.verify();
-    console.log("✅ Email transporter is ready");
-    return true;
-  } catch (error) {
-    console.error("❌ Email transporter error:", error);
-    return false;
-  }
 };
 
 const DEFAULT_MEETING_LINK = "https://meet.google.com/eeu-xnbf-yzb";
@@ -50,7 +21,7 @@ const emailTemplates = {
     subject: (position) => `First Round Interview Invitation - ${position}`,
     html: (candidate, position, date, time, meetingLink) => {
       const finalMeetingLink = meetingLink || DEFAULT_MEETING_LINK;
-      return `
+      return String.raw`
 <!DOCTYPE html>
 <html>
 <head>
@@ -300,18 +271,10 @@ export const sendInterviewEmail = async (
       round,
     });
 
-    // Test transporter first
-    const isTransporterReady = await testTransporter();
-    if (!isTransporterReady) {
-      throw new Error("Email transporter is not ready");
-    }
-
     const template = emailTemplates[round];
     if (!template) {
       throw new Error(`No email template found for round: ${round}`);
     }
-
-    const transporter = createTransporter();
 
     const finalMeetingLink = meetingLink || DEFAULT_MEETING_LINK;
     const localTime = await convertTo12Hour(time);
@@ -323,7 +286,13 @@ export const sendInterviewEmail = async (
       },
       to: email,
       subject: template.subject(position),
-      html: template.html(candidate, position, date, localTime, finalMeetingLink)
+      html: template.html(
+        candidate,
+        position,
+        date,
+        localTime,
+        finalMeetingLink
+      ),
     };
 
     console.log("Sending email with options:", {
@@ -332,11 +301,14 @@ export const sendInterviewEmail = async (
       subject: mailOptions.subject,
     });
 
-    const result = await transporter.sendMail(mailOptions);
-
+    const result = await sendEmail(
+      mailOptions?.to,
+      mailOptions.subject,
+      mailOptions.html
+    );
     console.log("✅ Email sent successfully!");
-    console.log("Message ID:", result.messageId);
-    console.log("Response:", result.response);
+    console.log("Message ID:", result);
+    console.log("Response:", result);
 
     return result;
   } catch (error) {
@@ -371,18 +343,10 @@ export const rescheduleInterviewEmail = async (
       round,
     });
 
-    // Test transporter first
-    const isTransporterReady = await testTransporter();
-    if (!isTransporterReady) {
-      throw new Error("Email transporter is not ready");
-    }
-
     const template = rescheduleEmailTemplates[round];
     if (!template) {
       throw new Error(`No email template found for round: ${round}`);
     }
-
-    const transporter = createTransporter();
 
     const finalMeetingLink = meetingLink || DEFAULT_MEETING_LINK;
 
@@ -395,22 +359,13 @@ export const rescheduleInterviewEmail = async (
       },
       to: email,
       subject: template.subject(position),
-      html: template.html(candidate, position, date, localTime, finalMeetingLink),
-      // Add text version for email clients that don't support HTML
-      // text: `
-      // Interview Invitation From Octopus Tech
-
-      // Dear ${candidate},
-
-      // Your ${round} interview has been rescheduled for the position of ${position}.
-
-      // Date: ${date || "To be confirmed"}
-      // Time: ${time || "To be confirmed"}
-      // Meeting Link: ${finalMeetingLink}
-
-      // Best regards,
-      // Octopus Team
-      // `,
+      html: template.html(
+        candidate,
+        position,
+        date,
+        localTime,
+        finalMeetingLink
+      ),
     };
 
     console.log("Sending email with options:", {
@@ -419,11 +374,15 @@ export const rescheduleInterviewEmail = async (
       subject: mailOptions.subject,
     });
 
-    const result = await transporter.sendMail(mailOptions);
+    const result = await sendEmail(
+      mailOptions?.to,
+      mailOptions.subject,
+      mailOptions.html
+    );
 
     console.log("✅ Email sent successfully!");
-    console.log("Message ID:", result.messageId);
-    console.log("Response:", result.response);
+    console.log("Message ID:", result);
+    console.log("Response:", result);
 
     return result;
   } catch (error) {
@@ -436,5 +395,3 @@ export const rescheduleInterviewEmail = async (
     throw error;
   }
 };
-
-export { testTransporter };
