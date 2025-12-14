@@ -217,7 +217,39 @@ export const updateInterview = async (req, res) => {
 export const getInterviews = async (req, res) => {
   try {
     console.log("Fetching all interviews...");
-    const interviews = await Interview.find().sort({ createdAt: -1 });
+    // const interviews = await Interview.find().sort({ createdAt: -1 });
+    const interviews = await Interview.aggregate([
+      {
+        $addFields: {
+          sortDateTime: {
+            $cond: [
+              {
+                $and: [
+                  { $ne: ["$date", ""] },
+                  { $ne: ["$time", ""] },
+                  { $ne: ["$date", null] },
+                  { $ne: ["$time", null] },
+                ],
+              },
+              {
+                $dateFromString: {
+                  dateString: {
+                    $concat: ["$date", "T", "$time"],
+                  },
+                },
+              },
+              null,
+            ],
+          },
+        },
+      },
+      {
+        $sort: {
+          sortDateTime: 1, // ascending
+          createdAt: -1, // fallback sort
+        },
+      },
+    ]);
 
     console.log(`Found ${interviews.length} interviews`);
 
