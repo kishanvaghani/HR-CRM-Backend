@@ -45,7 +45,7 @@ export const createInterview = async (req, res) => {
           newInterview.date,
           newInterview.time,
           newInterview.meetingLink,
-          req.body.round
+          req.body.round,
         );
 
         // Update interview with email sent status
@@ -62,7 +62,7 @@ export const createInterview = async (req, res) => {
           newInterview.lastEmailRound = req.body.round;
           await newInterview.save();
           console.log(
-            "⚠️ Continuing without email..., Data stored Successfully"
+            "⚠️ Continuing without email..., Data stored Successfully",
           );
         }
         // newInterview.emailSent = true;
@@ -71,7 +71,7 @@ export const createInterview = async (req, res) => {
       } catch (emailError) {
         console.error(
           `❌ Failed to send auto-email for ${req.body.round}:`,
-          emailError
+          emailError,
         );
         // Continue with the response even if email fails
         console.log("⚠️ Continuing without email...");
@@ -163,7 +163,7 @@ export const updateInterview = async (req, res) => {
           updatedInterview.date,
           updatedInterview.time,
           updatedInterview.meetingLink,
-          req.body.round
+          req.body.round,
         );
         // Update interview with email sent status
         updatedInterview.emailSent = true;
@@ -184,7 +184,7 @@ export const updateInterview = async (req, res) => {
           updatedInterview.date,
           updatedInterview.time,
           updatedInterview.meetingLink,
-          req.body.round
+          req.body.round,
         );
 
         // Update interview with email sent status
@@ -369,7 +369,7 @@ export const getInterviewsByFilter = async (req, res) => {
     if (status) filter.status = status;
     if (round) filter.round = round;
 
-    const interviews = await Interview.find(filter).sort({ createdAt: -1 });
+    const interviews = await Interview.find(filter).sort({ time: 1 });
 
     res.status(200).json({
       success: true,
