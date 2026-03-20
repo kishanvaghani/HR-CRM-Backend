@@ -374,12 +374,62 @@ export const getUpcomingInterviews = async (req, res) => {
 };
 export const getInterviewsByFilter = async (req, res) => {
   try {
-    const { status, round } = req.query;
+    const { status, round, dateRange } = req.query;
     const filter = {};
 
     if (status) filter.status = status;
     if (round) filter.round = round;
 
+    // Date filter for today, tomorrow, and yesterday
+    if (dateRange === "recent3") {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      const todayStr = `${yyyy}-${mm}-${dd}`;
+
+      // Yesterday
+      const yesterdayDate = new Date(today);
+      yesterdayDate.setDate(today.getDate() - 1);
+      const yyyyY = yesterdayDate.getFullYear();
+      const mmY = String(yesterdayDate.getMonth() + 1).padStart(2, "0");
+      const ddY = String(yesterdayDate.getDate()).padStart(2, "0");
+      const yesterdayStr = `${yyyyY}-${mmY}-${ddY}`;
+
+      // Tomorrow
+      const tomorrowDate = new Date(today);
+      tomorrowDate.setDate(today.getDate() + 1);
+      const yyyyT = tomorrowDate.getFullYear();
+      const mmT = String(tomorrowDate.getMonth() + 1).padStart(2, "0");
+      const ddT = String(tomorrowDate.getDate()).padStart(2, "0");
+      const tomorrowStr = `${yyyyT}-${mmT}-${ddT}`;
+
+      filter.date = { $in: [yesterdayStr, todayStr, tomorrowStr] };
+
+      // Fetch all interviews for these dates
+      const interviews = await Interview.find(filter).sort({ time: 1 });
+
+      // Group by date
+      const grouped = {
+        today: [],
+        tomorrow: [],
+        yesterday: [],
+      };
+      for (const interview of interviews) {
+        if (interview.date === todayStr) grouped.today.push(interview);
+        else if (interview.date === tomorrowStr)
+          grouped.tomorrow.push(interview);
+        else if (interview.date === yesterdayStr)
+          grouped.yesterday.push(interview);
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: grouped,
+      });
+    }
+
+    // Default: no date grouping
     const interviews = await Interview.find(filter).sort({ time: 1 });
 
     res.status(200).json({
