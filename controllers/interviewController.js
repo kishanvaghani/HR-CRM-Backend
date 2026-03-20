@@ -216,9 +216,19 @@ export const updateInterview = async (req, res) => {
 
 export const getInterviews = async (req, res) => {
   try {
-    console.log("Fetching all interviews...");
-    // const interviews = await Interview.find().sort({ createdAt: -1 });
-    const interviews = await Interview.aggregate([
+    console.log("Fetching all interviews...", req.query);
+    // Build match stage if filter is present
+    let matchStage = {};
+    if (req.query.filter === "not_rejected") {
+      matchStage.round = { $ne: "Rejected" };
+    } else if (req.query.filter === "only_rejected") {
+      matchStage.round = { $eq: "Rejected" };
+    }
+    const pipeline = [];
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
+    }
+    pipeline.push(
       {
         $addFields: {
           sortDateTime: {
@@ -249,7 +259,8 @@ export const getInterviews = async (req, res) => {
           createdAt: -1, // fallback sort
         },
       },
-    ]);
+    );
+    const interviews = await Interview.aggregate(pipeline);
 
     console.log(`Found ${interviews.length} interviews`);
 
